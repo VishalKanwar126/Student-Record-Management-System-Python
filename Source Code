@@ -1,0 +1,187 @@
+from tkinter import *
+import sqlite3
+from tkinter import messagebox
+
+global feed
+feed=0
+
+
+
+window=Tk()
+window.title("Student Record Management System")
+
+#scrollbar=Scrollbar(window)
+#scrollbar.pack(side=RIGHT,fill=Y)
+#scrollbar.config(frame.yview)
+
+conn=sqlite3.connect("project10.db")
+#conn.execute(' ' 'CREATE TABLE STUDENT (ROLL_NUMBER VARCHAR(20) PRIMARY KEY  NOT NULL, NAME CHAR(10) NOT NULL,EMAIL_ID CHAR(20) NOT NULL,PHONE_NO INT NOT NULL,CGPA FLOAT NOT NULL);' ' ')
+#conn.execute("INSERT INTO STUDENT (ROLL_NUMBER,NAME,EMAIL_ID,PHONE_NO,CGPA) VALUES('15csu001','AAYUSH','a12@gmail.com',9899315069,7.5)");
+#conn.execute("INSERT INTO STUDENT (ROLL_NUMBER,NAME,EMAIL_ID,PHONE_NO,CGPA) VALUES('15csu002','AKRAM','a22@gmail.com',9899315039,8.5)");
+#conn.execute("INSERT INTO STUDENT (ROLL_NUMBER,NAME,EMAIL_ID,PHONE_NO,CGPA) VALUES('15csu003','BALLI','b12@gmail.com',9899315049,9.5)");
+#conn.execute("INSERT INTO STUDENT (ROLL_NUMBER,NAME,EMAIL_ID,PHONE_NO,CGPA) VALUES('15csu004','DRUV','d12@gmail.com',9899315065,7.6)");
+#conn.commit()
+
+def clear():
+    q5.config(text="")
+    q4.config(text="")
+
+def reset():
+    e1.delete(0,END)
+    e2.delete(0,END)
+    e3.delete(0,END)
+    e4.delete(0,END)
+    e5.delete(0,END)
+    e1.focus_set()
+
+def add():
+    v1=e1.get()
+    v2=e2.get()
+    v3=e3.get()
+    v4=e4.get()
+    v5=e5.get()
+    conn.execute(''' INSERT INTO STUDENT (ROLL_NUMBER,NAME,EMAIL_ID,PHONE_NO,CGPA) VALUES(?,?,?,?,?)''',(v1,v2,v3,v4,v5))
+    conn.commit()
+    reset()
+    #tkMessageBox.showinfo("ALERT", "Addition Successful!")
+    messagebox.showinfo("Alert", "Addition Succesful")
+    show()
+
+def delete():
+    v1=e1.get()
+    v2=e2.get()
+    v3=e3.get()
+    v4=e4.get()
+    v5=e5.get()
+    conn.execute("""DELETE FROM STUDENT WHERE ROLL_NUMBER=? or NAME=? or EMAIL_ID=? or PHONE_NO=? """,(v1,v2,v3,v4))
+    conn.commit()
+    reset()
+    #tkMessageBox.showinfo("ALERT", "Deletion Successful!")
+    messagebox.showinfo("Alert", "Deletion Successful")
+    show()
+    
+def update():
+    v1=e1.get()
+    v2=e2.get()
+    v3=e3.get()
+    v4=e4.get()
+    v5=e5.get()
+    conn.execute('''UPDATE STUDENT set NAME =? WHERE ROLL_NUMBER=?''',(v2,v1))
+    conn.execute('''UPDATE STUDENT set EMAIL_ID =? WHERE ROLL_NUMBER=?''',(v3,v1))
+    conn.execute('''UPDATE STUDENT set PHONE_NO =? WHERE ROLL_NUMBER=?''',(v4,v1))
+    conn.execute('''UPDATE STUDENT set CGPA =? WHERE ROLL_NUMBER=?''',(v5,v1))
+    conn.commit()
+    reset()
+    #tkMessageBox.showinfo("ALERT", "Update Successful!")
+    messagebox.showinfo("Alert", "Update Successful")
+    show()
+
+
+def show():
+    var=""
+    
+    cursor = conn.execute("SELECT ROLL_NUMBER, NAME, EMAIL_ID, PHONE_NO, CGPA  from STUDENT")
+    l1="ROLL NUMBER     NAME     EMAIL ID     PHONE NO     CGPA"
+    q4.config(text=l1)
+    #print(l1)
+    #q4=Label (window ,text=l1,font=('arial', 12, 'bold'), bg='lightblue')
+    #q4.pack(fill=X)
+    
+    for row in cursor :
+        l2='{0} - {1} - {2} - {3} - {4}'.format(row[0], row[1], row[2], row[3], row[4])
+        
+        q3=Label (window,text=l2,font=('arial', 12, 'bold'), bg='lightgrey')
+        
+        #q3.pack(fill=X)
+        #print(l2+'\n')
+        var=var  + l2 + '\n'
+        #var=str(row[0]) +"  "+ str(row[1]) +"  "+ str(row[2]) +"  "+ str(row[3]) +"  "+ str(row[4])
+        #q3.config(text=l2)
+        
+        #feed=1
+        #q3.config(text=l2)
+        
+       
+        #var = str(l2)
+        #final.config(text=var)
+        #final.pack()
+        #print(final)
+    #messagebox.showinfo("Student Data", var)
+    #print (var)
+    q5.config(text=var)
+    
+       
+
+
+roll = Label(window, text="Roll Number: ")
+roll.grid(row=0,column=0,pady=5,sticky=E)
+
+
+e1 = Entry(window)
+e1.grid(row=0,column=1,sticky=W)
+
+name = Label(window,text="Name: ")
+name.grid(row=1,column=0,pady=5,sticky=E)
+
+e2 = Entry(window)
+e2.grid(row=1,column=1,sticky=W)
+
+email = Label(window,text="E.Mail Id: ")
+email.grid(row=2,column=0,pady=5,sticky=E)
+
+
+e3 = Entry(window)
+e3.grid(row=2,column=1,sticky=W)
+
+phone = Label(window, text="Phone No.: ")
+phone.grid(row=3,column=0,pady=5,sticky=E)
+
+
+e4 = Entry(window)
+e4.grid(row=3,column=1,sticky=W)
+
+cgpa = Label(window, text="Current CGPA: ")
+cgpa.grid(row=4,column=0,pady=5,sticky=E)
+
+e5 = Entry(window)
+e5.grid(row=4,column=1,sticky=W)
+
+b1=Button(window, text="Add Student Info", command =add, width=30)
+b1.grid(row=5,columnspan=2)
+
+b2=Button(window, text="Delete Student Info", command =delete, width=30)
+b2.grid(row=6,columnspan=2,pady=5)
+
+b3=Button(window, text="Update Info", command =update, width=30)
+b3.grid(row=7,columnspan=2)
+
+b4=Button(window, text="Show info", command =show, width=30)
+b4.grid(row=8,columnspan=2,pady=5)
+
+b5=Button(window, text="Reset", command =reset, width=30)
+b5.grid(row=9,columnspan=2)
+
+b6=Button(window, text="Clear", command =clear, width=30)
+b6.grid(row=10,columnspan=2,pady=5)
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+q4=Label (window ,text="",font=('arial', 12, 'bold'), bg='lightblue')
+q4.grid(row=11,columnspan=2)
+
+q5=Label(window,text="",font=('arial', 12, 'bold'), bg='lightgrey')
+q5.grid(row=12,columnspan=2)
+
+#cursor = conn.execute("SELECT ROLL_NUMBER, NAME, EMAIL_ID, PHONE_NO, CGPA  from STUDENT")
+#for row in cursor :
+        # l2='{0} - {1} - {2} - {3} - {4}'.format(row[0], row[1], row[2], row[3], row[4])
+        
+        # q3=Label (window,text=l2,font=('arial', 12, 'bold'), bg='lightgrey')
+        # q3.pack(fill=X)
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#final=Label(window,text="ABC",font=('arial', 12, 'bold'), bg='lightgrey')
+#final.pack()
+
+window.mainloop()
